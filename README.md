@@ -1,7 +1,19 @@
 # OSH2018-Project-Draft
-Draft of OSH Project
+可行性报告提要：
+
+https://shimo.im/docs/7bvB4m2IaoYREToj
 
 
+
+
+
+
+
+
+
+
+
+参考书：《程序员的自我修养》
 
 ----
 
