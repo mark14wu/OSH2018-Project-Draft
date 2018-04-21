@@ -18,14 +18,16 @@
 
 * 可执行的对象文件(Executable file)
 
-        很常见，如文本编辑器vi等等。可执行的脚本(如shell脚本)不是 Executable object file，它们只是文本文件。
+        很常见，如文本编辑器vi等等。可执行的脚本(如shell脚本)不是 Executable object file，它们只是文本文件，一般无扩展名。
 
 * 可被共享的对象文件(Shared object file)
 
         这就是所谓的动态库文件，也即 .so 文件。动态库在发挥作用的过程中，必须经过两个步骤：
         （1） 链接编辑器拿它和其他Relocatable object file以及shared object file作为输入，经链接处理后，生存另外的 shared object file 或者 executable file。
         （2)  在运行时，动态链接器(dynamic linker)拿它和一个Executable file以及另外一些 Shared object file 来一起处理，在Linux系统里面创建一个进程映像。
+* 核心转储文件(Core dump file)
 
+        当进程意外终止时，系统可以将，该进程的地址空间内容及终止时的一些其他信息转储到核心转储文件，比如linux下的core dump
 ## elf文件的组成
 elf文件大都包含ELF头部、程序头部表、节区或段、节区头部表。 ELF 头部用来描述整个文件的组织。节区部分包含链接视图的指令、数据、符号表、重定位信息等。程序头部表告诉系统如何创建进程映像。节区头部表包含了描述文件节区的信息，如名称、大小。
 
@@ -92,7 +94,11 @@ int main(void){
 * 入口点地址
 是指程序第一条要运行的指令的运行时地址，如这个a.out的进入点是 0x400430。可重定位文件只是供再链接，不会有程序进入点（这里会是0），而可执行文件和动态库都存在进入点。可执行文件的进入点指向C库中的_start，动态库中的进入点指向 call_gmon_start。
 * Number of program headers、Number of section headers
-segments（段）的数量和section（节）数量。可重定位文件必须有节区头部表（有section），可执行文件或可共享文件必须有程序头部表（有segments）
+指程序头部表和段表的数量。可重定位文件必须有节区头部表（有section），可执行文件或可共享文件必须有程序头部表（有segments），本头的大小(size of this header)指这个ELF文件头本身的大小，程序头大小指程序头部表的大小，特别地其中字符串索引节头表示字符串表中ELF文件头的字符串所在表中的索引。
+* 魔数
+最前面Magic的十六个字节被规定用来标识ELF文件的，操作系统通过这16个字节来达成识别ELF文件的目的，7f对应ASCII码中DEL控制符，随后三个字节分别表示‘E’，‘L’，‘F’对应的ASCII码，之后第五个字节02表示是64位的，第六个字节表示字节序01表示小端序，第七个字节表示ELF文件的主版本号，大多数均为01，这是因为ELF标准自1.2后已经不更新了，后9位ELF标准没有特殊规定，但一些平台上被用作扩展标记，在加载前会先确认魔数是否正确，如果不正确会拒绝加载。
+* 其中start of section header和start of program header表示段和程序起始地址
+
 ## 节区头部表
 使用
 ```
